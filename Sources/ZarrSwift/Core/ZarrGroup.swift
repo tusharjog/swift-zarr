@@ -33,6 +33,20 @@ public class ZarrGroup : ZarrNode {
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         if let jsondata = try? encoder.encode(metadata) {
             try self.store.set(key: metadataKey, value: jsondata)
+            print(metadataKey)
+            print(String(data: jsondata, encoding: .utf8)!)
+        }
+    }
+}
+
+extension ZarrGroup : CustomStringConvertible {
+    public var description : String {
+        // metadata is a ZarrGroupMetaData, not Data. Try to encode to JSON for readability; otherwise, fall back.
+        if let jsonData = try? JSONEncoder().encode(self.metadata),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            return jsonString
+        } else {
+            return String(describing: self.metadata)
         }
     }
 }

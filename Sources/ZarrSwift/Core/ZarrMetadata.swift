@@ -76,5 +76,33 @@ public struct ZarrArrayMetaData : Codable {
     public let chunkGrid : ZarrChunkGrid
     public let chunkKeyEncoding : ZarrChunkKeyEncoding
     public let fillValue : FillValue
-    //public let codecs : [ZarrCodec]
+    public let codecs : [ZarrCodecConfiguration]
+    
+    // Attributes are optional
+    public let attributes: [String: ZarrDataType]?
+    
+    enum CodingKeys : String, CodingKey {
+        case zarrFormat = "zarr_format"
+        case nodeType = "node_type"
+        case shape
+        case dataType = "data_type"
+        case chunkGrid = "chunk_grid"
+        case chunkKeyEncoding = "chunk_key_encoding"
+        case fillValue = "fill_value"
+        case codecs
+        case attributes
+    }
+    
+    public init(shape: [Int], dataType: ZarrDataType, chunkGrid: ZarrChunkGrid, chunkKeyEncoding: ZarrChunkKeyEncoding, fillValue: FillValue, codecs: [ZarrCodecConfiguration], attributes: [String : ZarrDataType]?) {
+        self.zarrFormat = 3
+        self.nodeType = .array
+
+        self.shape = shape
+        self.dataType = dataType
+        self.chunkGrid = chunkGrid
+        self.chunkKeyEncoding = chunkKeyEncoding
+        self.fillValue = fillValue
+        self.codecs = codecs
+        self.attributes = attributes
+    }
 }

@@ -29,6 +29,10 @@ struct ZarrStoreTests {
         
         let store = try FilesystemStore(path: path)
         
-        try store.set(key: "a", value: Data([1]))
+        try store.set(key: "a", value: Data([1, 2, 3, 4, 5, 6]))
     }
+    
 }
+
+
+
