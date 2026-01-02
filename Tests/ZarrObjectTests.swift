@@ -11,13 +11,16 @@ import Foundation
 import QuartzCore
 @testable import ZarrSwift
 
+
 struct ZarrObjectTests {
 
     
     @Test func createObjects() async throws {
+        let url = URL(fileURLWithPath: "/tmp/test_createObjects.zarr")
+        deleteFileOrFolderIfExists(at: url)
         
         //let store = MemoryStore()
-        let store = try FilesystemStore(path: URL(fileURLWithPath: "/tmp/test_createObjects.zarr"))
+        let store = try FilesystemStore(path: url)
         
         try store.set(key: "a", value: Data([1, 2, 3, 4, 5, 6]))
         
@@ -25,7 +28,7 @@ struct ZarrObjectTests {
         let root = try ZarrGroup(path: "foo", store: store, metadata: metadata)
         let arrayMetadata = ZarrArrayMetaData(
             shape: [2],
-            dataType: ZarrDataType.number(0.0),
+            dataType: ZarrDataType.float64,
             chunkGrid: ZarrChunkGrid.regular([2]),
             chunkKeyEncoding: ZarrChunkKeyEncoding.default(separator: "/"),
             fillValue: FillValue.float(0),
