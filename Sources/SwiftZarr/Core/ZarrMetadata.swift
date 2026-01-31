@@ -67,6 +67,13 @@ public struct ZarrGroupMetaData: Codable {
  }
  */
 
+public protocol StorageTransformer {
+    var name: String { get }
+    func transformKey(_ chunkKey: String, chunkIndices: [Int]) -> String
+    func readChunk(key: String, chunkIndices: [Int], store: ZarrStore) throws -> Data?
+    func writeChunk(key: String, chunkIndices: [Int], data: Data, store: ZarrStore) throws
+}
+
 public struct ZarrArrayMetaData : Codable {
     public let zarrFormat: Int
     public let nodeType: ZarrNodeType
@@ -81,6 +88,7 @@ public struct ZarrArrayMetaData : Codable {
     // Attributes are optional
     public let attributes: [String: JSONValue]?
     public let dimensionNames : [String]?
+    //public let storageTransformers : [String]
     
     enum CodingKeys : String, CodingKey {
         case zarrFormat = "zarr_format"

@@ -8,11 +8,12 @@ let package = Package(
     dependencies: [
             .package(url: "https://github.com/apple/swift-log", from: "1.6.0"),
             .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0"),
+            .package(url: "https://github.com/pvieito/PythonKit.git", branch: "master"),
 
         ],
     targets: [
         .target(name: "SwiftZarr", path: "Sources/SwiftZarr"),
-        .executableTarget(name: "ZarrTool", dependencies: ["SwiftZarr"], path: "Sources/CLI"),
-        .testTarget(name: "SwiftZarrTests", dependencies: ["SwiftZarr"])
+        .executableTarget(name: "ZarrTool", dependencies: ["SwiftZarr", .product(name: "ArgumentParser", package: "swift-argument-parser")], path: "Sources/CLI"),
+        .testTarget(name: "SwiftZarrTests", dependencies: ["SwiftZarr", "PythonKit"])
     ]
 )

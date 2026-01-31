@@ -31,7 +31,7 @@ struct ZarrObjectTests {
             dataType: ZarrDataType.float32,
             chunkGrid: ZarrChunkGrid.regular([10, 10]),
             chunkKeyEncoding: ZarrChunkKeyEncoding.default(separator: "/"),
-            fillValue: FillValue.float(0),
+            fillValue: .float(0),
             codecs: [],
             attributes: [:],
             dimensionNames: []

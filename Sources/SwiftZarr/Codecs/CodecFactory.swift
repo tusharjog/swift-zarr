@@ -14,6 +14,9 @@ public enum CodecFactory {
             return IdentityCodec()
         case "gzip":
             return GzipCodec(level:5)
+        case "bytes":
+            let endian = config.configuration["endian"]?.stringValue ?? "little"
+            return BytesCodec(endian: endian)
         default:
             throw ZarrError.codecError("Unknown codec: \(config.name)")
         }

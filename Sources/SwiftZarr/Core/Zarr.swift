@@ -53,4 +53,17 @@ public enum FillValue : Codable, Equatable {
             throw ZarrError.invalidFillValue("\(container)")
         }
     }
+    
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        
+        switch(self) {
+        case .int(let v): try container.encode(v)
+        case .uint(let v): try container.encode(v)
+        case .float(let v): try container.encode(v)
+        case .string(let v): try container.encode(v)
+        case .null: try container.encodeNil()
+            
+        }
+    }
 }

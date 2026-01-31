@@ -24,7 +24,13 @@ public class FilesystemStore: ZarrStore {
     public func get(key: String) throws -> Data? {
         let path = fullPath(for: key)
         guard fileManager.fileExists(atPath: path.path) else { return nil }
-        return try Data(contentsOf: path)
+        // 2. Load the file data
+        guard let data = try? Data(contentsOf: path) else {
+            fatalError("Failed to load data from \(path)")
+        }
+
+        //return try Data(contentsOf: path)
+        return data
     }
     
     public func set(key: String, value: Data) throws {

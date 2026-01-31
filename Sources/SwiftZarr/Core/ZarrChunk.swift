@@ -45,12 +45,13 @@ public enum ZarrChunkGrid : Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
         case .regular(let shape):
+            try container.encode("regular", forKey: .name)
             var configContainer = container.nestedContainer(keyedBy: Configuration.CodingKeys.self, forKey: .configuration)
             try configContainer.encode(shape, forKey: .chunkShape)
         }
     }
     
-    var chunkShape: [Int] {
+    public var chunkShape: [Int] {
         switch self {
         case .regular(let shape):
             return shape
@@ -94,6 +95,7 @@ public enum ZarrChunkKeyEncoding : Codable {
     }
     
     public func encode(to encoder: any Encoder) throws {
+        
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
         case .default(let sep):

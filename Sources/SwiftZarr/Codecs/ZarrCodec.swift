@@ -16,10 +16,10 @@ public protocol ZarrCodec : Codable, Equatable {
 
 
 public struct ZarrCodecConfiguration : Codable, Sendable {
-    var name : String
-    var configuration : [String:String]
+    public var name : String
+    public var configuration : [String:JSONValue]
     
-    public init(name: String, configuration: [String : String]) {
+    public init(name: String, configuration: [String : JSONValue]) {
         self.name = name
         self.configuration = configuration
     }

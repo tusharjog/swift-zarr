@@ -32,6 +32,21 @@ struct ZarrStoreTests {
         try store.set(key: "a", value: Data([1, 2, 3, 4, 5, 6]))
     }
     
+    @Test func fileSystemStoreRead() async throws {
+        let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let path = URL(fileURLWithPath: "/Users/tusharjog/Code/swift-zarr/Tests/files/example-2.zarr")
+        
+        let store = try FilesystemStore(path: path)
+        //let list = try store.list(prefix:"example-2")
+        //print("List : ", list)
+        
+        let array = try ZarrArray.open(store:store, path:"")
+        print("Array : ", array)
+        
+        //try store.set(key: "a", value: Data([1, 2, 3, 4, 5, 6]))
+        //let val = try store.get(key: "")
+        //print(val)
+    }
 }
 
 

@@ -39,8 +39,6 @@ public class ZarrGroup : ZarrNode {
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         if let jsondata = try? encoder.encode(metadata) {
             try store.set(key: metadataKey, value: jsondata)
-            print(metadataKey)
-            print(String(data: jsondata, encoding: .utf8)!)
         }
         
         // Create instance
@@ -59,6 +57,26 @@ public class ZarrGroup : ZarrNode {
         
         // Create instance (no writing)
         return try ZarrGroup(store: store, path: path, metadata: metadata)
+    }
+
+    public func listChildren() throws -> [String] {
+        let prefix = path.isEmpty ? "" : path + "/"
+        let keys = try store.list(prefix: prefix)
+        var children = Set<String>()
+        
+        for key in keys {
+            guard key.hasPrefix(prefix) else { continue }
+            let relative = String(key.dropFirst(prefix.count))
+            let components = relative.split(separator: "/")
+            if let first = components.first {
+                let childName = String(first)
+                // Filter out zarr.json itself if it's at the root of the search
+                if childName != "zarr.json" {
+                     children.insert(childName)
+                }
+            }
+        }
+        return Array(children).sorted()
     }
 }
 

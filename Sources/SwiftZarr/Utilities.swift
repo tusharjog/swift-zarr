@@ -37,6 +37,10 @@ extension Encodable {
     }
 }
 
+
+
+// MARK: - JSON Value type
+
 public enum JSONValue: Codable, Equatable, Sendable {
     case string(String)
     case number(Double)
@@ -125,6 +129,22 @@ extension JSONValue : ExpressibleByBooleanLiteral {
 extension JSONValue {
     public var boolValue: Bool? {
         if case .bool(let v) = self {
+            return v
+        } else {
+            return nil
+        }
+    }
+    
+    public var stringValue: String? {
+        if case .string(let v) = self {
+            return v
+        } else {
+            return nil
+        }
+    }
+
+    public var doubleValue: Double? {
+        if case .number(let v) = self {
             return v
         } else {
             return nil

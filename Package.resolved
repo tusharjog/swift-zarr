@@ -1,6 +1,15 @@
 {
-  "originHash" : "f590c2bfec2198de327b83d3a0712f0907ab2a36507a8e102356963c7f3d8609",
+  "originHash" : "cbe64a78848051db79d454ca9380a8db95f9cb862a9bd2c28700a23d8b250de7",
   "pins" : [
+    {
+      "identity" : "pythonkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pvieito/PythonKit.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "d030b5193d1e4e770156deb27865773b64c5695f"
+      }
+    },
     {
       "identity" : "swift-argument-parser",
       "kind" : "remoteSourceControl",
