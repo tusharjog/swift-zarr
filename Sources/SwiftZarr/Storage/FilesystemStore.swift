@@ -13,24 +13,22 @@ public class FilesystemStore: ZarrStore {
     private let fileManager = FileManager.default
     
     public init(path: URL) throws {
-        self.basePath = path
-        try fileManager.createDirectory(at: path, withIntermediateDirectories: true)
+        self.basePath = path.standardized
+        try fileManager.createDirectory(at: self.basePath, withIntermediateDirectories: true)
     }
     
     private func fullPath(for key: String) -> URL {
-        return basePath.appendingPathComponent(key)
+        if key.isEmpty { return basePath }
+        return basePath.appendingPathComponent(key).standardized
     }
     
     public func get(key: String) throws -> Data? {
         let path = fullPath(for: key)
-        guard fileManager.fileExists(atPath: path.path) else { return nil }
-        // 2. Load the file data
-        guard let data = try? Data(contentsOf: path) else {
-            fatalError("Failed to load data from \(path)")
+        var isDir: ObjCBool = false
+        guard fileManager.fileExists(atPath: path.path, isDirectory: &isDir), !isDir.boolValue else { 
+            return nil 
         }
-
-        //return try Data(contentsOf: path)
-        return data
+        return try Data(contentsOf: path)
     }
     
     public func set(key: String, value: Data) throws {

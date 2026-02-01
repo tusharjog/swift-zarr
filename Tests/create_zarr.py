@@ -9,10 +9,10 @@ import zarr
 import numpy as np
 
 
-def example_2():
+def example_2(path="files/example-2.zarr"):
     # Create a 2D Zarr array with Blosc compression
     z = zarr.create_array(
-        store="files/example-2.zarr",
+        store=path,
         shape=(100, 100),
         chunks=(10, 10),
         dtype="f4",

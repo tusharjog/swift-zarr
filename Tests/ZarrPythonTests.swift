@@ -30,13 +30,20 @@ struct ZarrPythonTests {
         // Converting back to a Swift array
         let swiftArray = Array(array)
         
-        sys.path.append("/Users/tusharjog/Code/swift-zarr/Tests")
-        let create_zarr = Python.import("create_zarr")
-        create_zarr.example_2()
+        let currentFileURL = URL(fileURLWithPath: #filePath)
+        let testsDir = currentFileURL.deletingLastPathComponent()
+        sys.path.append(testsDir.path)
         
+        let create_zarr = Python.import("create_zarr")
+        let tempZarr = testsDir.appendingPathComponent("files/temp_python.zarr").path
+        // Delete if exists
+        try? FileManager.default.removeItem(atPath: tempZarr)
+        create_zarr.example_2(tempZarr)
     }
     @Test func readArray() async throws {
-        let externalPath = "./files/example-2.zarr"
+        let currentFileURL = URL(fileURLWithPath: #filePath)
+        let testsDir = currentFileURL.deletingLastPathComponent()
+        let externalPath = testsDir.appendingPathComponent("files/example-2.zarr").path
         let url = URL(fileURLWithPath: externalPath)
         // Check if path exists
         var isDir: ObjCBool = false

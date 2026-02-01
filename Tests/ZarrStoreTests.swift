@@ -33,8 +33,11 @@ struct ZarrStoreTests {
     }
     
     @Test func fileSystemStoreRead() async throws {
-        let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        let path = URL(fileURLWithPath: "/Users/tusharjog/Code/swift-zarr/Tests/files/example-2.zarr")
+        let currentFileURL = URL(fileURLWithPath: #filePath)
+        let testFilesDir = currentFileURL.deletingLastPathComponent().appendingPathComponent("files")
+        let path = testFilesDir.appendingPathComponent("example-2.zarr")
+        print("Test path: \(path.path)")
+        print("Exists: \(FileManager.default.fileExists(atPath: path.path))")
         
         let store = try FilesystemStore(path: path)
         //let list = try store.list(prefix:"example-2")
