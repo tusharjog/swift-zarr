@@ -65,12 +65,15 @@ public class ZarrGroup : ZarrNode {
         var children = Set<String>()
         
         for key in keys {
-            guard key.hasPrefix(prefix) else { continue }
-            let relative = String(key.dropFirst(prefix.count))
+            // Some stores might return keys relative to the prefix, others relative to root.
+            // Normalize to relative-to-root for logic below if it doesn't already have the prefix.
+            let fullKey = (path.isEmpty || key.hasPrefix(prefix)) ? key : prefix + key
+            
+            guard fullKey.hasPrefix(prefix) else { continue }
+            let relative = String(fullKey.dropFirst(prefix.count))
             let components = relative.split(separator: "/")
             if let first = components.first {
                 let childName = String(first)
-                // Filter out zarr.json itself if it's at the root of the search
                 if childName != "zarr.json" {
                      children.insert(childName)
                 }

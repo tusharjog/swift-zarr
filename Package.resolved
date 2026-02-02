@@ -1,5 +1,5 @@
 {
-  "originHash" : "cbe64a78848051db79d454ca9380a8db95f9cb862a9bd2c28700a23d8b250de7",
+  "originHash" : "78fb276a755651d6172fedbab60b56ed5dca2b8826fce1617e5d8dd6e988d49b",
   "pins" : [
     {
       "identity" : "pythonkit",
@@ -26,6 +26,15 @@
       "state" : {
         "revision" : "bc386b95f2a16ccd0150a8235e7c69eab2b866ca",
         "version" : "1.8.0"
+      }
+    },
+    {
+      "identity" : "swift-system",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-system",
+      "state" : {
+        "revision" : "7c6ad0fc39d0763e0b699210e4124afd5041c5df",
+        "version" : "1.6.4"
       }
     }
   ],

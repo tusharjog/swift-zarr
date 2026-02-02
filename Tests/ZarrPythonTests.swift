@@ -1,5 +1,5 @@
 //
-//  ZarrPython.swift
+//  ZarrPythonTests.swift
 //  SwiftZarr
 //
 //  Created by Tushar Jog on 1/3/26.
@@ -7,56 +7,96 @@
 
 import Testing
 import Foundation
-import QuartzCore
 import PythonKit
 @testable import SwiftZarr
 
-
+@Suite(.serialized)
 struct ZarrPythonTests {
-    @Test func createZarrFiles() async throws {
-
+    private let fileManager = FileManager.default
+    
+    private static var testsDirectory: URL {
+        URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+    }
+    
+    private var tempDirectory: URL {
+        fileManager.temporaryDirectory.appendingPathComponent("SwiftZarrTests", isDirectory: true)
+    }
+    
+    private static let setupPython: Void = {
         let sys = Python.import("sys")
-        print(Python.version, Python.versionInfo)
+        let testsPath = testsDirectory.path
+        
+        var found = false
+        for path in sys.path {
+            if String(path) == testsPath {
+                found = true
+                break
+            }
+        }
+        if !found {
+            sys.path.append(testsPath)
+        }
+    }()
+    
+    init() throws {
+        _ = Self.setupPython
+        // Ensure temp directory exists
+        if !fileManager.fileExists(atPath: tempDirectory.path) {
+            try fileManager.createDirectory(at: tempDirectory, withIntermediateDirectories: true)
+        }
+    }
+    
+    @Test func pythonEnvironment() {
+        let sys = Python.import("sys")
         print("Python Version: \(sys.version)")
-        print("Python Encoding: \(sys.getdefaultencoding().upper())")
-
-        let zarr = Python.import("zarr")
-        
-        let np = Python.import("numpy")
-        let array = np.array([1, 2, 3, 4, 5])
-        // Standard indexing and slicing
-        print(array[0..<3]) // Output: [1, 2, 3]
-
-        // Converting back to a Swift array
-        let swiftArray = Array(array)
-        
-        let currentFileURL = URL(fileURLWithPath: #filePath)
-        let testsDir = currentFileURL.deletingLastPathComponent()
-        sys.path.append(testsDir.path)
+        #expect(String(sys.version) != "")
+    }
+    
+    @Test func createAndReadBasicArray() throws {
+        let zarrPath = tempDirectory.appendingPathComponent("basic_array.zarr").path
+        try? fileManager.removeItem(atPath: zarrPath)
         
         let create_zarr = Python.import("create_zarr")
-        let tempZarr = testsDir.appendingPathComponent("files/temp_python.zarr").path
-        // Delete if exists
-        try? FileManager.default.removeItem(atPath: tempZarr)
-        create_zarr.example_2(tempZarr)
+        create_zarr.create_basic_array(zarrPath)
+        
+        let store = try FilesystemStore(path: URL(fileURLWithPath: zarrPath))
+        let array = try ZarrArray.open(store: store, path: "")
+        
+        #expect(array.metadata.shape == [100, 100])
+        #expect(array.metadata.dataType == .float32)
     }
-    @Test func readArray() async throws {
-        let currentFileURL = URL(fileURLWithPath: #filePath)
-        let testsDir = currentFileURL.deletingLastPathComponent()
-        let externalPath = testsDir.appendingPathComponent("files/example-2.zarr").path
-        let url = URL(fileURLWithPath: externalPath)
-        // Check if path exists
-        var isDir: ObjCBool = false
-        let exists = FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir)
-        guard exists && isDir.boolValue else {
-            print("⚠️ External Zarr not found at \(externalPath) or is not a directory, skipping test.")
-            return
-        }
-        let store = try FilesystemStore(path: url)
-        try store.get(key:"")
-        let array = try ZarrArray.open(store:store, path:"")
-        print(array)
+    
+    @Test func createAndReadCompressedArray() throws {
+        let zarrPath = tempDirectory.appendingPathComponent("compressed_array.zarr").path
+        try? fileManager.removeItem(atPath: zarrPath)
+        
+        let create_zarr = Python.import("create_zarr")
+        create_zarr.create_array_with_compression(zarrPath)
+        
+        let store = try FilesystemStore(path: URL(fileURLWithPath: zarrPath))
+        let array = try ZarrArray.open(store: store, path: "")
+        
+        #expect(array.metadata.shape == [100, 100])
+        #expect(!array.metadata.codecs.isEmpty)
     }
-
+    
+    @Test func createAndReadHierarchy() throws {
+        let zarrPath = tempDirectory.appendingPathComponent("hierarchy.zarr").path
+        try? fileManager.removeItem(atPath: zarrPath)
+        
+        let create_zarr = Python.import("create_zarr")
+        create_zarr.create_hierarchical_group(zarrPath)
+        
+        let store = try FilesystemStore(path: URL(fileURLWithPath: zarrPath))
+        let root = try ZarrGroup.open(store: store, path: "")
+        
+        let children = try root.listChildren()
+        print(children)
+        #expect(children.contains("foo"))
+        #expect(children.contains("bar"))
+        
+        let foo = try ZarrGroup.open(store: store, path: "foo")
+        let fooChildren = try foo.listChildren()
+        #expect(fooChildren.contains("spam"))
+    }
 }
-

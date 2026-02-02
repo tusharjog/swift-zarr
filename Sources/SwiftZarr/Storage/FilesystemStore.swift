@@ -48,7 +48,7 @@ public class FilesystemStore: ZarrStore {
     }
     
     public func list(prefix: String?) throws -> [String] {
-        let searchPath = prefix.map { fullPath(for: $0) } ?? basePath
+        let searchPath = (prefix == nil || prefix!.isEmpty) ? basePath : fullPath(for: prefix!)
         guard fileManager.fileExists(atPath: searchPath.path) else { return [] }
         
         let contents = try fileManager.contentsOfDirectory(
@@ -57,8 +57,14 @@ public class FilesystemStore: ZarrStore {
             options: [.skipsHiddenFiles]
         )
         
+        let baseString = basePath.path.hasSuffix("/") ? basePath.path : basePath.path + "/"
+        
         return contents.map { url in
-            String(url.path.dropFirst(basePath.path.count + 1))
+            let fullPath = url.path
+            if fullPath.hasPrefix(baseString) {
+                return String(fullPath.dropFirst(baseString.count))
+            }
+            return url.lastPathComponent
         }
     }
 }
