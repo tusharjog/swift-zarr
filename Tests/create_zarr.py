@@ -11,7 +11,7 @@ import io
 import shutil
 from pprint import pprint
 
-def create_array_with_compression(path="files/example-2.zarr"):
+def create_array_with_compression(path="/tmp/files/example-2.zarr"):
     print(f"Creating : {path}")
     # Create a 2D Zarr array with Blosc compression
     z = zarr.create_array(
@@ -30,7 +30,7 @@ def create_array_with_compression(path="files/example-2.zarr"):
     z[:, :] = np.random.random((100, 100))
     print(z.info)
     
-def create_basic_array(path="files/example-1.zarr"):
+def create_basic_array(path="/tmp/files/example-1.zarr"):
     # Create a 2D Zarr array
     z = zarr.create_array(
         store=path,
@@ -43,7 +43,7 @@ def create_basic_array(path="files/example-1.zarr"):
     z[:, :] = np.random.random((100, 100))
     print(z.info)
     
-def create_hierarchical_group(path="files/example-3.zarr"):
+def create_hierarchical_group(path="/tmp/files/example-3.zarr"):
     # Create nested groups and add arrays
     root = zarr.group(path)
     foo = root.create_group(name="foo")
@@ -59,7 +59,7 @@ def create_hierarchical_group(path="files/example-3.zarr"):
     # print(root.tree())
     print(root.info)
     
-def create_nested_groups(path="files/example-4.zarr"):
+def create_nested_groups(path="/tmp/files/example-4.zarr"):
     # Create nested groups and add arrays
     root = zarr.group(path, attributes={'name': 'root'})
     foo = root.create_group(name="foo")
@@ -78,7 +78,7 @@ def create_nested_groups(path="files/example-4.zarr"):
     assert new_root.attrs == root.attrs
     print(root.info)
     
-def create_single_file_store(path="files/example-5.zip"):
+def create_single_file_store(path="/tmp/files/example-5.zip"):
     # Store the array in a ZIP file
     store = zarr.storage.ZipStore(path, mode="w")
 

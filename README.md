@@ -857,6 +857,12 @@ This library implements the Zarr v3 specification developed by the Zarr communit
 **Want to learn more about Zarr?** Check out the [official documentation](https://zarr.readthedocs.io/).
 
 
+## Running tests
+
+```sh
+export PYTHON_LIBRARY=/opt/homebrew/opt/python@3.13/Frameworks/Python.framework/Versions/3.13/lib/libpython3.13.dylib
+swift test
+```
 
 
 ## License

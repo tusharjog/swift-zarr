@@ -19,10 +19,21 @@ public protocol ZarrNode {
     
     func isGroup() -> Bool
     func isArray() -> Bool
+    
+    func asGroup() -> ZarrGroup?
+    func asArray() -> ZarrArray?
 }
 
 extension ZarrNode {
     public var name : String {
         return path.split(separator: "/").last.map(String.init) ?? ""
+    }
+    
+    public func asGroup() -> ZarrGroup? {
+        return self as? ZarrGroup
+    }
+    
+    public func asArray() -> ZarrArray? {
+        return self as? ZarrArray
     }
 }

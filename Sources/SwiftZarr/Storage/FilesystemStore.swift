@@ -13,13 +13,13 @@ public class FilesystemStore: ZarrStore {
     private let fileManager = FileManager.default
     
     public init(path: URL) throws {
-        self.basePath = path.standardized
+        self.basePath = path.standardized.resolvingSymlinksInPath()
         try fileManager.createDirectory(at: self.basePath, withIntermediateDirectories: true)
     }
     
     private func fullPath(for key: String) -> URL {
         if key.isEmpty { return basePath }
-        return basePath.appendingPathComponent(key).standardized
+        return basePath.appendingPathComponent(key).standardized.resolvingSymlinksInPath()
     }
     
     public func get(key: String) throws -> Data? {
@@ -60,11 +60,12 @@ public class FilesystemStore: ZarrStore {
         let baseString = basePath.path.hasSuffix("/") ? basePath.path : basePath.path + "/"
         
         return contents.map { url in
-            let fullPath = url.path
+            let standardizedURL = url.standardized.resolvingSymlinksInPath()
+            let fullPath = standardizedURL.path
             if fullPath.hasPrefix(baseString) {
                 return String(fullPath.dropFirst(baseString.count))
             }
-            return url.lastPathComponent
+            return standardizedURL.lastPathComponent
         }
     }
 }
