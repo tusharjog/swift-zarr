@@ -11,19 +11,15 @@ import io
 import shutil
 from pprint import pprint
 
-def create_array_with_compression(path="/tmp/files/example-2.zarr"):
+def create_array_with_compression(path="files/example-2.zarr"):
     print(f"Creating : {path}")
-    # Create a 2D Zarr array with Blosc compression
+    # Create a 2D Zarr array with Gzip compression
     z = zarr.create_array(
         store=path,
         shape=(100, 100),
         chunks=(10, 10),
         dtype="f4",
-        compressors=zarr.codecs.BloscCodec(
-            cname="zstd",
-            clevel=3,
-            shuffle=zarr.codecs.BloscShuffle.shuffle
-        )
+        compressors=zarr.codecs.GzipCodec(level=5)
     )
 
     # Assign data to the array
@@ -102,6 +98,30 @@ def create_single_file_store(path="/tmp/files/example-5.zip"):
 
     # read the data as a NumPy Array
     print(z[:])
+
+def create_zip_zarr(path="files/example.zarr.zip"):
+    # Store the array in a ZIP file
+    # Ensure parent directory exists
+    import os
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    
+    store = zarr.storage.ZipStore(path, mode="w")
+
+    z = zarr.create_array(
+        store=store,
+        shape=(50, 50),
+        chunks=(10, 10),
+        dtype="i4",
+        fill_value=0,
+        compressors=None
+    )
+
+    # write some data
+    z[0, 0] = 123
+    z[49, 49] = 456
+
+    # the ZipStore must be explicitly closed
+    store.close()
 
 if __name__ == "__main__":
     create_basic_array()

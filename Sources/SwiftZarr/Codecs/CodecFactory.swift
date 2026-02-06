@@ -17,6 +17,9 @@ public enum CodecFactory {
         case "bytes":
             let endian = config.configuration["endian"]?.stringValue ?? "little"
             return BytesCodec(endian: endian)
+        case "zstd":
+            let level = config.configuration["level"]?.intValue ?? 3
+            return ZstdCodec(level: level)
         default:
             throw ZarrError.codecError("Unknown codec: \(config.name)")
         }

@@ -150,6 +150,14 @@ extension JSONValue {
             return nil
         }
     }
+    
+    public var intValue: Int? {
+        if case .number(let v) = self {
+            return Int(v)
+        } else {
+            return nil
+        }
+    }
 }
 
 // TODO add more

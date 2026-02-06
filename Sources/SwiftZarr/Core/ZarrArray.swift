@@ -74,9 +74,7 @@ public class ZarrArray : ZarrNode {
             // Create instance (no writing)
             return try ZarrArray(store: store, path: path, metadata: metadata)
         } catch {
-            //print("Decoding error \(error)")
-            // Handle potential decoding errors
-            fatalError("Failed to decode JSON: \(error.localizedDescription)")
+            throw error
         }
     }
     
@@ -233,7 +231,8 @@ extension ZarrArray {
     internal func decompress(_ data: Data) throws -> Data {
         let chunkShape = metadata.chunkGrid.chunkShape
         let elementCount = chunkShape.reduce(1, *)
-        let expectedSize = elementCount * MemoryLayout<UInt8>.size // TODO Change this to use ZarrDataType
+        let elementSize = metadata.dataType.byteSize ?? 1
+        let expectedSize = elementCount * elementSize
         var processedData = data
         
         // 🛠️ Map the JSON configurations to executable Codec objects

@@ -80,6 +80,20 @@ struct ZarrPythonTests {
         #expect(!array.metadata.codecs.isEmpty)
     }
     
+    @Test func createAndReadSingleFileStore() throws {
+        let zarrPath = tempDirectory.appendingPathComponent("single_file_zarr.zip").path
+        try? fileManager.removeItem(atPath: zarrPath)
+        
+        let create_zarr = Python.import("create_zarr")
+        create_zarr.create_single_file_store(zarrPath)
+        
+        let store = try FilesystemStore(path: URL(fileURLWithPath: zarrPath))
+        let array = try ZarrArray.open(store: store, path: "")
+        
+        #expect(array.metadata.shape == [100, 100])
+        #expect(!array.metadata.codecs.isEmpty)
+    }
+    
     @Test func createAndReadHierarchy() throws {
         let zarrPath = tempDirectory.appendingPathComponent("hierarchy.zarr").path
         try? fileManager.removeItem(atPath: zarrPath)
